@@ -56,6 +56,36 @@ export const constantRoutes = [
   },
 
   {
+    path: '/schedule',
+    name: 'Schedule',
+    component: Layout,
+    redirect: '/schedule/schedule1',
+    meta: { title: 'Schedule', icon: 'el-icon-date' },
+    children: [
+      {
+        path: 'schedule1',
+        component: () => import('@/views/schedule/schedule1/index'),
+        name: 'Schedule1',
+        meta: { title: 'schedule1' }
+      },
+      {
+        path: 'schedule2',
+        component: () => import('@/views/schedule/schedule2/index'),
+        name: 'Schedule2',
+        meta: { title: 'schedule2' }
+      }
+      // ,
+      // {
+      //   path: 'detail',
+      //   name: 'detail',
+      //   component: () => import('@/views/schedule/detail/index'),
+      //   hidden: true
+      // }
+    ]
+
+  },
+
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
@@ -73,18 +103,6 @@ export const constantRoutes = [
         name: 'Tree',
         component: () => import('@/views/tree/index'),
         meta: { title: 'Tree', icon: 'tree' }
-      },
-      {
-        path: 'schedule',
-        name: 'Schedule',
-        component: () => import('@/views/schedule/index'),
-        meta: { title: 'Schedule', icon: 'el-icon-date' }
-      },
-      {
-        path: 'detail',
-        name: 'detail',
-        component: () => import('@/views/schedule/detail/index'),
-        hidden: true
       }
     ]
   },

@@ -9,10 +9,12 @@ const data = Mock.mock({
     display_time: '@datetime',
     // pageviews: '@integer(300, 5000)',
     // 'type|1': ['Work', 'Study', 'Game'],
-    // work: '@integer(0, 24)',
-    // study: '@integer(0, 24)',
-    // game: '@integer(0, 24)',
-    graphics: { 'work': '@integer(0, 24)', 'study': '@integer(0, 24)', 'game': '@integer(0, 24)'},
+    work: '@integer(0, 24)',
+    study: '@integer(0, 24)',
+    game: '@integer(0, 24)',
+    rest: '@integer(0, 24)',
+    pie_date: '@DATETIME("2023-06-dd")',
+    // graphics: { 'pie_date': '@DATETIME("2023-06-dd")', 'work': '@integer(0, 24)', 'study': '@integer(0, 24)', 'game': '@integer(0, 24)', 'rest': '@integer(0, 24)' },
     // work_hour: '@integer(0, 24)',
     importance: '@integer(0, 5)'
   }]

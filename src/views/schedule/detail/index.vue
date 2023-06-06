@@ -18,25 +18,25 @@
         </el-select>
       </el-form-item> -->
       <el-form-item label="Work">
-        <el-input-number v-model="form.graphics.work" @change="onChange"/>
+        <el-input-number v-model="form.graphics.work" @change="onChange" />
       </el-form-item>
       <el-form-item label="Study">
-        <el-input-number v-model="form.graphics.study" @change="onChange"/>
+        <el-input-number v-model="form.graphics.study" @change="onChange" />
       </el-form-item>
       <el-form-item label="Game">
-        <el-input-number v-model="form.graphics.game" @change="onChange"/>
+        <el-input-number v-model="form.graphics.game" @change="onChange" />
       </el-form-item>
       <el-form-item label="Graphics">
-        <charts ref="grp" :graphics="this.form.graphics" grpHeight="300px"/>
+        <charts ref="grp" :graphics="form.graphics" grp-height="300px" />
       </el-form-item>
       <el-form-item>
-        <el-calendar></el-calendar>
+        <el-calendar />
       </el-form-item>
       <el-form-item label="Display_time">
         <el-date-picker v-model="form.display_time" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width: 100%;" />
       </el-form-item>
       <el-form-item label="Importance">
-        <el-rate v-model="form.importance" ></el-rate>
+        <el-rate v-model="form.importance" />
       </el-form-item>
       <el-form-item label="Activity type">
         <el-checkbox-group v-model="form.type">
@@ -58,28 +58,28 @@
 </template>
 
 <script>
-import charts from '@/components/echarts/index.vue';
+import charts from '@/components/echarts/index.vue'
 
 export default {
+  components: {
+    charts
+  },
   data() {
     return {
       form: {
         author: '',
         sex: '',
         type: [],
-        graphics: { work: 1, study: 2, game: 3},
+        graphics: { work: 1, study: 2, game: 3 },
         importance: 3,
         display_time: ''
       }
     }
   },
-  components: {
-    charts
-  },
   methods: {
     /* work/study/game变更时，饼图联动 */
     onChange() {
-      this.$refs.grp.getEchartsSeries();
+      this.$refs.grp.getEchartsSeries()
     },
     /* 提交 */
     onSubmit() {

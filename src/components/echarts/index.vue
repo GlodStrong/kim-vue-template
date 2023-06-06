@@ -3,6 +3,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
+import { getList } from '@/api/schedule'
 
 export default {
   props: {
@@ -20,12 +21,15 @@ export default {
   data() {
     return {
       divId: this.grpKey + 'Grp',
+      cellSize: [120, 100],
       gHeight: '',
       myChart: '',
+      dialogVisible: false,
       selectParm: {
         yyyymm: '',
         days: []
-      }
+      },
+      apiList: []
     }
   },
   created() {
@@ -34,67 +38,69 @@ export default {
   },
   mounted() {
     this.$nextTick(function() {
-    //   this.myChart = echarts.init(document.getElementById(this.divId))
-      this.getEchartsSeries()
+      /* 通过API获取数据 */
+      getList().then(response => {
+        this.apiList = response.data.items
+        this.getEchartsSeries()
+      })
     })
   },
   destroyed() {
     this.myChart.clear()
   },
   methods: {
-    /* 计算当月日期 */
-    calDateList() {
-      const date = new Date()
-      const mm = date.getMonth() + 1
-      const days = new Date(date.getFullYear(), mm, 0).getDate()
-      const dateList = []
-      for (let day = 1; day <= days; day++) {
-        const dateItem = date.getFullYear() + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (day < 10 ? '0' + day : day)
-        dateList.push([dateItem, Math.floor(Math.random() * 10000)])
-      }
-      return {
-        yyyymm: date.getFullYear() + '-' + (mm < 10 ? '0' + mm : mm),
-        days: dateList
-      }
-    },
     /* 饼图 option */
-    getPieSeries(days) {
-      return days.map((item, index) => {
-        // const ct = chart.convertToPixel('calendar', item);
-        // console.log('getPieSeries convertToPixel >>>',  item);
+    getPieSeries(param) {
+      return param.days.map((item, index) => {
+        let scheduleObj = this.apiList.find(element => element.pie_date === item)
+        console.log('scheduleObj', scheduleObj)
+
+        if (!scheduleObj) {
+          scheduleObj = {
+            work: 0,
+            study: 0,
+            game: 0,
+            rest: 24
+          }
+        }
+
         return {
           id: index + 'pie',
           type: 'pie',
           coordinateSystem: 'calendar',
-          center: item[0],
+          center: item,
           label: {
             formatter: '{c}',
             position: 'inside'
           },
           radius: 30,
           data: [
-            { name: '工作', value: Math.round(Math.random() * 24) },
-            { name: '娱乐', value: Math.round(Math.random() * 24) },
-            { name: '睡觉', value: Math.round(Math.random() * 24) }
+            // { name: 'Work', value: Math.round(Math.random() * 24) },
+            // { name: 'Study', value: Math.round(Math.random() * 24) },
+            // { name: 'Game', value: Math.round(Math.random() * 24) },
+            // { name: 'Rest', value: Math.round(Math.random() * 24) }
+            { name: 'Work', value: scheduleObj.work },
+            { name: 'Study', value: scheduleObj.study },
+            { name: 'Game', value: scheduleObj.game },
+            { name: 'Rest', value: scheduleObj.rest }
           ]
         }
       })
     },
     /* 生成日历模板 */
-    getCalenderSeries(otherSeries, yyyymm) {
+    getCalenderSeries(otherSeries, dayList) {
       return {
         tooltip: {},
         legend: {
-          data: ['工作', '娱乐', '睡觉'],
+          data: ['Work', 'Study', 'Game', 'Rest'],
           left: 20
         },
         calendar: {
-          top: 'bottom',
+          top: 'middle',
           left: 'center',
           orient: 'vertical',
-          cellSize: [120, 100],
-          range: yyyymm,
-          // range: '2023-01',
+          cellSize: this.cellSize,
+          range: dayList.yyyymm,
           yearLabel: {
             show: false
           },
@@ -102,7 +108,10 @@ export default {
             show: false
           },
           dayLabel: {
+            firstDay: 1,
             margin: 20,
+            fontSize: 14,
+            fontWeight: 'bold',
             nameMap: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
           }
         },
@@ -111,27 +120,27 @@ export default {
             id: 'label',
             type: 'scatter',
             coordinateSystem: 'calendar',
+            symbolSize: 0,
             label: {
               show: true,
               formatter(params) {
-                return echarts.time.format(params.value[0], '{dd}', false)
+                return echarts.time.format(params.value, '{dd}', false)
               },
               color: '#000',
               fontSize: 14,
-              offset: [-100 / 2 + 10, -100 / 2 + 10]
+              offset: [-this.cellSize[0] / 2 + 10, -this.cellSize[1] / 2 + 10]
             },
-            data: yyyymm
+            data: dayList.days
           },
           ...otherSeries
         ]
       }
     },
     /* 生成echarts */
-    getEchartsSeries(dateObj) {
-      console.log('getEchartsSeries before', dateObj)
+    getEchartsSeries(param) {
       /* 如果调用方法的时候没有传值，用最初生成组件时传的数据 */
-      if (!dateObj) {
-        dateObj = this.grpParam
+      if (!param) {
+        param = this.grpParam
       }
 
       /* 初始化echarts */
@@ -139,18 +148,17 @@ export default {
       this.myChart.showLoading()
 
       /* 获取饼图 */
-      const pieSeries = this.getPieSeries(dateObj.days)
-      const option = this.getCalenderSeries(pieSeries, dateObj.yyyymm)
+      const pieSeries = this.getPieSeries(param)
+      const option = this.getCalenderSeries(pieSeries, param)
       if (option && typeof option === 'object') this.myChart.setOption(option)
 
-      console.log('getEchartsSeries end', pieSeries)
       this.myChart.hideLoading()
     },
     /* 数据变更时，echarts更新 */
-    updateEcharts(dateObj) {
+    updateEcharts(param) {
       /* 销毁原有数据 */
       this.myChart.dispose()
-      this.getEchartsSeries(dateObj)
+      this.getEchartsSeries(param)
     }
   }
 }
