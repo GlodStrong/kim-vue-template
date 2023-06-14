@@ -7,3 +7,11 @@ export function getList(params) {
     params
   })
 }
+
+export function getGrpList(params) {
+  return request({
+    url: '/vue-admin-template/schedule/grpList',
+    method: 'post',
+    params
+  })
+}

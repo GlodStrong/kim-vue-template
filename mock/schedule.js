@@ -25,6 +25,22 @@ module.exports = [
     url: '/vue-admin-template/schedule/list',
     type: 'get',
     response: config => {
+      console.log('config1 >>>', config)
+      const items = data.items
+      return {
+        code: 20000,
+        data: {
+          total: items.length,
+          items: items
+        }
+      }
+    }
+  },
+  {
+    url: '/vue-admin-template/schedule/grpList',
+    type: 'post',
+    response: config => {
+      console.log('config2 >>>', config)
       const items = data.items
       return {
         code: 20000,

@@ -56,6 +56,27 @@ export const constantRoutes = [
   },
 
   {
+    path: '/project',
+    name: 'Project',
+    component: Layout,
+    redirect: '/project',
+    children: [
+      {
+        path: 'project',
+        name: 'Project',
+        component: () => import('@/views/project/index'),
+        meta: { title: 'Project', icon: 'el-icon-monitor' }
+      }
+      // {
+      //   path: 'pjtInformation',
+      //   name: 'pjtInformation',
+      //   component: () => import('@/views/project/pjtInformation/index'),
+      //   hidden: true
+      // }
+    ]
+  },
+
+  {
     path: '/schedule',
     name: 'Schedule',
     component: Layout,

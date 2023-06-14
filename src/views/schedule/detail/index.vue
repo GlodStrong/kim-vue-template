@@ -10,13 +10,6 @@
           <el-radio label="Female" />
         </el-radio-group>
       </el-form-item>
-      <!-- <el-form-item label="Type">
-        <el-select v-model="form.region" placeholder="please select your Type">
-          <el-option label="Work" value="work"/>
-          <el-option label="Study" value="study"/>
-          <el-option label="Gamee" value="game"/>
-        </el-select>
-      </el-form-item> -->
       <el-form-item label="Work">
         <el-input-number v-model="form.graphics.work" @change="onChange" />
       </el-form-item>

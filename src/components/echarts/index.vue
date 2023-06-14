@@ -4,6 +4,7 @@
 <script>
 import * as echarts from 'echarts'
 import { getList } from '@/api/schedule'
+import { getGrpList } from '@/api/schedule'
 
 export default {
   props: {
@@ -42,6 +43,13 @@ export default {
       getList().then(response => {
         this.apiList = response.data.items
         this.getEchartsSeries()
+      })
+
+      /* 通过API获取数据 */
+      getGrpList({ ym: '2023-07' }).then(response => {
+        // this.apiList = response.data.items
+        console.log('response >>>', response)
+        // this.getEchartsSeries()
       })
     })
   },
