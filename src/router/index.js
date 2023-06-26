@@ -66,13 +66,13 @@ export const constantRoutes = [
         name: 'Project',
         component: () => import('@/views/project/index'),
         meta: { title: 'Project', icon: 'el-icon-monitor' }
+      },
+      {
+        path: 'pjtInformation',
+        name: 'pjtInformation',
+        component: () => import('@/views/project/pjtInformation/index'),
+        hidden: true
       }
-      // {
-      //   path: 'pjtInformation',
-      //   name: 'pjtInformation',
-      //   component: () => import('@/views/project/pjtInformation/index'),
-      //   hidden: true
-      // }
     ]
   },
 
