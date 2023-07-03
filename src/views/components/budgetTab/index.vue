@@ -2,7 +2,7 @@
   <div>
     <el-tabs style="height: 100%;">
       <el-tab-pane label="人力费">
-        <laborTab style="width: 49%;" />
+        <laborTab style="width: 100%;" />
       </el-tab-pane>
       <el-tab-pane label="外包费">外包费</el-tab-pane>
       <el-tab-pane label="材料费">材料费</el-tab-pane>

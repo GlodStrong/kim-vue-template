@@ -6,11 +6,13 @@ const data = Mock.mock({
       id: '@increment(1)',
       name: '@cname',
       'pos_cd|1': ['intern', 'staff', 'director', 'manager', 'chief', 'ceo'],
-      'apr_cd|1': ['waiting', 'approved', 'deleted'],
+      'apr_cd|1': ['waiting', 'approved', 'cancel'],
       iv_str_dt: '@date',
       iv_end_dt: '@date',
       unit: '@integer(0, 999999)',
-      level_cd: '@integer(0, 10)'
+      work_day: '@float(0, 365, 0, 1)',
+      level_cd: '@float(0, 4, 0, 2)',
+      pm_yn: false
     }
   ]
 })
