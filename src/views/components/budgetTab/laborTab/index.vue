@@ -3,19 +3,10 @@
     <el-container>
       <!-- 顶部 -->
       <el-header>
-        <!-- <el-row :gutter="60">
-          <el-col :span="1" :offset="20">
-            <el-button type="primary" icon="el-icon-plus" />
-          </el-col>
-          <el-col :span="1">
-            <el-button type="primary" icon="el-icon-minus" />
-          </el-col>
-        </el-row> -->
         <el-button-group style="float: right">
           <el-button type="primary" icon="el-icon-copy-document">复制</el-button>
-          <el-button type="primary" icon="el-icon-edit">添加</el-button>
-          <!-- <el-button type="primary" icon="el-icon-share" /> -->
-          <el-button type="danger" icon="el-icon-delete">删除</el-button>
+          <el-button type="primary" icon="el-icon-edit" @click="dialogFormVisible = true">添加</el-button>
+          <el-button type="danger" icon="el-icon-delete" @click="delLabor">删除</el-button>
         </el-button-group>
       </el-header>
 
@@ -29,7 +20,7 @@
           show-summary
           :data="tableData"
           :summary-method="getSummaries"
-          @row-dblclick="handleRowClick"
+          @select="handleTbChk"
         >
           <el-table-column
             type="selection"
@@ -212,6 +203,70 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <!-- 弹窗 -->
+        <el-dialog title="人力信息" size="tiny" :visible="dialogFormVisible" :before-close="handleClose">
+          <el-form ref="laborInfo" :model="laborForm" label-width="80px" :rules="rules">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="laborForm.name" style="width: 100%;" />
+            </el-form-item>
+            <el-form-item label="职位" prop="pos_cd">
+              <el-select v-model="laborForm.pos_cd" placeholder="请选择职位" style="width: 100%;">
+                <el-option label="intern" value="intern" />
+                <el-option label="staff" value="staff" />
+                <el-option label="director" value="director" />
+                <el-option label="manager" value="manager" />
+                <el-option label="chief" value="chief" />
+                <el-option label="ceo" value="ceo" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="PM" prop="pm_yn">
+              <el-switch v-model="laborForm.pm_yn" />
+            </el-form-item>
+            <el-form-item label="生日" prop="birthday">
+              <el-date-picker v-model="laborForm.birthday" type="date" placeholder="选择日期" style="width: 100%;" />
+            </el-form-item>
+            <el-form-item label="审批状态" prop="apr_cd">
+              <el-input v-model="laborForm.apr_cd" style="width: 100%;" disabled />
+            </el-form-item>
+            <el-form-item label="投入期间" required>
+              <!-- <el-col :span="7">
+                <el-date-picker v-model="laborForm.iv_str_dt" type="date" placeholder="选择日期" style="width: 100%;" />
+              </el-col>
+              <el-col class="line" :span="2">~</el-col>
+              <el-col :span="7">
+                <el-date-picker v-model="laborForm.iv_end_dt" type="date" placeholder="选择日期" style="width: 100%;" />
+              </el-col> -->
+              <el-col :span="11">
+                <el-form-item prop="iv_str_dt">
+                  <el-date-picker v-model="laborForm.iv_str_dt" type="date" placeholder="选择日期" style="width: 100%;" />
+                </el-form-item>
+              </el-col>
+              <el-col class="line" :span="2">-</el-col>
+              <el-col :span="11">
+                <el-form-item prop="iv_end_dt">
+                  <el-date-picker v-model="laborForm.iv_end_dt" type="date" placeholder="选择日期" style="width: 100%;" />
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="工作天数">
+              <el-input v-model="laborForm.work_day" style="width: 100%;" />
+            </el-form-item>
+            <el-form-item label="单价" prop="unit">
+              <el-input v-model="laborForm.unit" style="width: 100%;" />
+            </el-form-item>
+            <el-form-item label="Level">
+              <el-rate v-model="laborForm.level_cd" style="width: 100%;" />
+            </el-form-item>
+            <el-form-item label="其他">
+              <el-input type="textarea" style="width: 100%;" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitForm('laborInfo')">确认</el-button>
+              <el-button @click="dialogFormVisible = false">取消</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
       </el-main>
       <el-footer>Footer</el-footer>
     </el-container>
@@ -223,9 +278,44 @@ import { getList } from '@/api/labor'
 export default {
   data() {
     return {
+      dialogFormVisible: false,
       tempRadio: false,
       tempSelectRow: '',
-      tableData: []
+      laborForm: {
+        name: '',
+        pos_cd: '',
+        unit: '',
+        work_day: '',
+        level_cd: '',
+        pm_yn: false,
+        apr_cd: 'new',
+        iv_dt: '',
+        iv_str_dt: '',
+        iv_end_dt: '',
+        birthday: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: '请输入名称', trigger: 'blur' }
+        ],
+        pos_cd: [
+          { required: true, message: '请选择职位', trigger: 'change' }
+        ],
+        birthday: [
+          { type: 'date', required: true, message: '请选择生日', trigger: 'change' }
+        ],
+        iv_str_dt: [
+          { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+        ],
+        iv_end_dt: [
+          { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+        ],
+        unit: [
+          { required: true, message: '请填写单价', trigger: 'blur' }
+        ]
+      },
+      tableData: [],
+      tempSelectedData: []
     }
   },
   mounted() {
@@ -240,39 +330,49 @@ export default {
     getSummaries(columns, data) {
       console.log('columns, data', columns, data)
       const sums = []
-      // if (columns) {
-      //   columns.array.forEach((column, index) => {
-      //     if (index === 0) {
-      //       sums[index] = '总价'
-      //       return
-      //     }
-      //     const valueList = data.map(item => Number(item.unit))
-      //     console.log(valueList)
-      // const values = data.map(item => Number(item.unit))
-      // if (!values.every(value => isNaN(value))) {
-      //   sums[index] = values.reduce((prev, curr) => {
-      //     const value = Number(curr)
-      //     if (!isNaN(value)) {
-      //       return prev + curr
-      //     } else {
-      //       return prev
-      //     }
-      //   }, 0)
-      //   sums[index] += ' 元'
-      // } else {
-      //   sums[index] = 'N/A'
-      // }
-      // })
-      // }
       return sums
     },
     singleElection(row) {
       this.tempSelectRow = this.tableData.indexOf(row)
     },
-    /* 点击Row事件 */
-    handleRowClick(row) {
-      console.log('handleRowClick >>>', row)
-      this.$refs.laborsRef.toggleRowSelection(row)
+    /* 表格多选空点击事件 */
+    handleTbChk(selection, row) {
+      console.log('handleTbChk >>>>', selection, row)
+      // 初始化
+      this.tempSelectedData = selection
+      console.log('tempSelectedData >>>>', this.tempSelectedData)
+    },
+    /* 窗口点击确认 */
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    /* 删除 */
+    delLabor() {
+      /* 实际删除应走后端，但现在只呈现画面效果 */
+      /* 判断有没有check */
+      if (!this.tempSelectedData || this.tempSelectedData.length === 0) {
+        return
+      }
+      this.tableData.forEach((element, index) => {
+        if (this.tempSelectedData.some(item => item.id === element.id)) {
+          this.tableData.splice(index, 1)
+        }
+      })
+    },
+    /* 弹窗关闭 */
+    handleClose() {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          this.dialogFormVisible = false
+        })
+        .catch(_ => {})
     }
   }
 }
